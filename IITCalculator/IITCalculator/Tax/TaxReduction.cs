@@ -10,7 +10,7 @@ namespace IITCalculator
 {
     public abstract class TaxReduction
     {
-        public abstract double CalculateReduction(TotalIncome totalIncome);
+        public abstract double GetReduction();
 
         public override string ToString()
         {
@@ -32,7 +32,7 @@ namespace IITCalculator
         public double Reduction { get { return _reduction; } }
         private double _reduction;
 
-        public override double CalculateReduction(TotalIncome totalIncome)
+        public override double GetReduction()
         {
             return _reduction;
         }

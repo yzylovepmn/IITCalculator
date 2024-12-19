@@ -9,7 +9,15 @@ namespace IITCalculator
 {
     public abstract class IncomeReduction
     {
-        public abstract double CalculateReduction(TotalIncome totalIncome);
+        public IncomeReduction(TimePeriod type)
+        {
+            _type = type;
+        }
+
+        public TimePeriod Type { get { return _type; } }
+        protected TimePeriod _type;
+
+        public abstract double CalculateReduction(Income income);
 
         public override string ToString()
         {
@@ -19,7 +27,7 @@ namespace IITCalculator
 
     public class FixedIncomeReduction : IncomeReduction
     {
-        public FixedIncomeReduction(string name, double reduction)
+        public FixedIncomeReduction(string name, double reduction, TimePeriod incomeReductionType = TimePeriod.Month) : base(incomeReductionType)
         {
             _name = name;
             _reduction = reduction;
@@ -31,7 +39,7 @@ namespace IITCalculator
         public double Reduction { get { return _reduction; } }
         private double _reduction;
 
-        public override double CalculateReduction(TotalIncome totalIncome)
+        public override double CalculateReduction(Income income)
         {
             return _reduction;
         }
@@ -39,7 +47,7 @@ namespace IITCalculator
 
     public class RatioIncomeReduction : IncomeReduction
     {
-        public RatioIncomeReduction(string name, double ratio, double baseValue)
+        public RatioIncomeReduction(string name, double ratio, double baseValue, TimePeriod incomeReductionType = TimePeriod.Month) : base(incomeReductionType)
         {
             _name = name;
             _ratio = ratio;
@@ -55,9 +63,14 @@ namespace IITCalculator
         public double BaseValue { get { return _baseValue; } }
         private double _baseValue;
 
-        public override double CalculateReduction(TotalIncome totalIncome)
+        public override double CalculateReduction(Income income)
         {
-            return _reduction;
+            if (income != null)
+            {
+                var value = Math.Min(income.IncomeMonthly, _baseValue);
+                return value * _ratio;
+            }
+            return 0;
         }
     }
 }

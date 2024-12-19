@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,25 +16,35 @@ namespace IITCalculator
             _annualOneTimeIncome = annualOneTimeIncome;
         }
 
-        public IReadOnlyList<MonthIncome> MonthIncomes { get { return _monthIncomes; } }
         private List<MonthIncome> _monthIncomes;
-
-        public AnnualOneTimeIncome AnnualOneTimeIncome { get { return _annualOneTimeIncome; } }
         private AnnualOneTimeIncome _annualOneTimeIncome;
 
-        public override double Value
+        public override double IncomeMonthly
         {
             get
             {
                 var value = 0d;
                 foreach (var monthIncome in _monthIncomes)
-                    value += monthIncome.Value;
-                value += _annualOneTimeIncome.Value;
+                    value += monthIncome.IncomeMonthly;
                 return value;
             }
         }
 
-        public override double ValueToBeTaxed => throw new NotImplementedException();
+        public override double IncomeAnnualOneTime { get { return _annualOneTimeIncome.IncomeAnnualOneTime; } }
+
+        public override double GetIncomeMonthlyToBeTaxed(List<IncomeReduction> incomeReductions)
+        {
+            var value = 0d;
+
+            foreach (var monthIncome in _monthIncomes)
+                value += monthIncome.GetIncomeMonthlyToBeTaxed(incomeReductions);
+            return value;
+        }
+
+        public override double GetIncomeAnnualOneTimeToBeTaxed(List<IncomeReduction> incomeReductions)
+        {
+            return _annualOneTimeIncome.GetIncomeAnnualOneTimeToBeTaxed(incomeReductions);
+        }
 
         public static TotalIncome CreateBy(double avaergeMonthIncome, double annualOneTimeIncome)
         {

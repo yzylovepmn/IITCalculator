@@ -8,21 +8,38 @@ namespace IITCalculator
 {
     public class MonthIncome : Income
     {
-        public MonthIncome(Month month, double monthIncome, List<IncomeReduction> incomeReductions)
+        public MonthIncome(Month month, double monthIncome)
         {
             _month = month;
             _monthIncome = monthIncome;
-            _incomeReductions = incomeReductions;
         }
 
         public Month Month { get { return _month; } }
         private Month _month;
 
-        public override double Value { get { return _monthIncome; } }
-
-        public override double ValueToBeTaxed => throw new NotImplementedException();
-
+        public override double IncomeMonthly { get { return _monthIncome; } }
         private double _monthIncome;
-        private List<IncomeReduction> _incomeReductions;
+
+        public override double IncomeAnnualOneTime { get { return 0; } }
+
+        public override double GetIncomeMonthlyToBeTaxed(List<IncomeReduction> incomeReductions)
+        {
+            var value = IncomeMonthly;
+
+            foreach (var incomeReduction in incomeReductions)
+            {
+                if (incomeReduction.Type != TimePeriod.Month)
+                    continue;
+
+                value -= incomeReduction.CalculateReduction(this);
+            }
+
+            return value;
+        }
+
+        public override double GetIncomeAnnualOneTimeToBeTaxed(List<IncomeReduction> incomeReductions)
+        {
+            return IncomeAnnualOneTime;
+        }
     }
 }
